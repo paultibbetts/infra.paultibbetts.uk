@@ -1,0 +1,65 @@
+---
+- name: Prepare deploy structure
+  community.general.deploy_helper:
+    path: "{{ site_root }}"
+    state: present
+
+- name: Ensure deploy root directories are writable by deploy
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    mode: "2775"
+  loop:
+    - "{{ site_root }}"
+    - "{{ site_root }}/releases"
+    - "{{ site_root }}/shared"
+
+- name: Check whether current symlink exists
+  ansible.builtin.stat:
+    path: "{{ site_root }}/current"
+  register: site_current_stat
+
+- name: Compute new release paths (no directory created)
+  community.general.deploy_helper:
+    path: "{{ site_root }}"
+    state: query
+    release: "{{ ansible_facts.date_time.iso8601_basic_short }}"
+  when: not site_current_stat.stat.exists
+
+- name: Create new release directory (deploy_helper does not create it)
+  ansible.builtin.file:
+    path: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
+    state: directory
+    owner: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    mode: "2775"
+  when: not site_current_stat.stat.exists
+
+- name: Create initial release content (placeholder)
+  ansible.builtin.copy:
+    dest: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/index.html"
+    content: |
+      <!doctype html>
+      <html lang="en">
+      <meta charset="utf-8">
+      <title>{{ site_name }}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <body>
+        <h1>{{ site_name }}</h1>
+        <p>🚧</p>
+      </body>
+      </html>
+    owner: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    mode: "0664"
+  when: not site_current_stat.stat.exists
+
+- name: Finalize initial release (switch current symlink)
+  community.general.deploy_helper:
+    path: "{{ site_root }}"
+    release: "{{ ansible_facts['deploy_helper']['new_release'] }}"
+    state: finalize
+    keep_releases: "{{ web_keep_releases }}"
+  when: not site_current_stat.stat.exists

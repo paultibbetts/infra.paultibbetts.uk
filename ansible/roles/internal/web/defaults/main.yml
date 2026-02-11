@@ -1,0 +1,4 @@
+#SPDX-License-Identifier: MIT-0
+---
+web_group: "web"
+web_deploy_user: "deploy"

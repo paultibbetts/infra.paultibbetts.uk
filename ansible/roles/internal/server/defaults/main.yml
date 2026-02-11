@@ -1,0 +1,5 @@
+#SPDX-License-Identifier: MIT-0
+---
+server_default_shell: /bin/bash
+server_sudo_group: sudo
+server_users: []

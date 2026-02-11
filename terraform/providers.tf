@@ -8,10 +8,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.11"
     }
-    #mythic_beasts = {
-    #  source  = "TODO"
-    #  version = "?"
-    #}
+    mythicbeasts = {
+      source  = "paultibbetts/mythicbeasts"
+      version = "0.1.0"
+    }
   }
   required_version = "~> 1.14.3"
 }

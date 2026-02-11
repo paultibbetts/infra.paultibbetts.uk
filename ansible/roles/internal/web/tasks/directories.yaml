@@ -1,0 +1,9 @@
+---
+- name: Prepare deploy structures for all sites
+  ansible.builtin.include_tasks: directories_site.yaml
+  loop: "{{ web_sites }}"
+  loop_control:
+    loop_var: web_site
+  vars:
+    site_name: "{{ web_site }}"
+    site_root: "{{ web_sites_root }}/{{ web_site }}"

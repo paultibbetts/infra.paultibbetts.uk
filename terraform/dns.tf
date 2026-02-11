@@ -4,28 +4,28 @@ locals {
   default_ttl     = 1 # auto
   default_proxied = false
 
+  mythicbeasts_proxy = "proxy.mythic-beasts.com"
+
   records = {
 
     # paultibbetts.uk
 
-    #apex4 = {
-    #  type    = "A"
-    #  name    = "@"                          # TODO: check
-    #  content = mythic_beasts_proxy.web.ipv4 # TODO: check
-    #}
-
-    #apex6 = {
-    #  type    = "AAAA"
-    #  name    = "@"                       # TODO: check
-    #  content = mythic_beasts_pi.web.ipv6 # TODO: check
-    #}
-
-    # CNAME
+    apex = {
+      type    = "CNAME"
+      name    = "@"
+      content = local.mythicbeasts_proxy
+    }
 
     www = {
       type    = "CNAME"
       name    = "www"
-      content = "paultibbetts.uk"
+      content = local.mythicbeasts_proxy
+    }
+
+    dev = {
+      type    = "CNAME"
+      name    = "dev"
+      content = local.mythicbeasts_proxy
     }
 
     micro = {
@@ -101,17 +101,6 @@ locals {
 data "cloudflare_zones" "zones" {
   name = local.zone
 }
-
-#resource "cloudflare_dns_record" "paultibbettsuk" {
-#  zone_id = data.cloudflare_zones.zones.result[0].id
-
-#  name    = "@"
-#  type    = "A"
-#  content = mythic_beasts_proxy.pi.ipv4
-
-#  ttl     = 1
-#  proxied = false
-#}
 
 resource "cloudflare_dns_record" "record" {
   for_each = local.records

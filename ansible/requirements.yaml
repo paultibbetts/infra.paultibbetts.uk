@@ -1,0 +1,9 @@
+---
+roles:
+- name: paultibbetts.caddy
+  src: https://github.com/paultibbetts/ansible-role-caddy.git
+  version: 1.0.0
+collections:
+  - name: community.general
+    version: ">=8.0.0"
+  - name: ansible.posix

@@ -1,0 +1,38 @@
+{
+  servers {
+    listener_wrappers {
+      proxy_protocol {
+        # https://www.mythic-beasts.com/support/topics/proxy#sec-proxy-details
+{% for ip in mythicbeasts_proxy_ipv4 %}
+        allow {{ ip }}/32
+{% endfor %}
+{% for ip in mythicbeasts_proxy_ipv6 %}
+        allow {{ ip }}/128
+{% endfor %}
+      }
+      tls
+    }
+  }
+}
+
+(cf_tls) {
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+    }
+}
+
+{% for site in web_sites %}
+{{ site }} {
+  import cf_tls
+  root * {{ web_sites_root }}/{{ site }}/current
+  file_server
+  encode zstd gzip
+  log
+}
+{% endfor %}
+
+www.paultibbetts.uk {
+  import cf_tls
+  redir {scheme}://paultibbetts.uk{uri} permanent
+}
+

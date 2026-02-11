@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Ensure baseline packages
+  ansible.builtin.apt:
+    name:
+      - rsync
+    state: present
+
+- name: Ensure deploy group exists
+  ansible.builtin.group:
+    name: "{{ web_group }}"
+    system: true
+
+- name: Ensure deploy user exists
+  ansible.builtin.user:
+    name: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    home: "{{ web_deploy_home }}"
+    create_home: true
+    shell: /bin/bash
+    system: true
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "{{ web_deploy_home }}/.ssh"
+    state: directory
+    owner: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    mode: "0700"
+
+- name: Install deploy SSH authorized keys
+  ansible.builtin.authorized_key:
+    user: "{{ web_deploy_user }}"
+    key: "{{ item }}"
+    state: present
+  loop: "{{ web_deploy_ssh_keys }}"
+

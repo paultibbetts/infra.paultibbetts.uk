@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Prepare user and tools for deployment
+  ansible.builtin.import_tasks: deploy.yaml
+
+- name: Prepare directories
+  ansible.builtin.import_tasks: directories.yaml
