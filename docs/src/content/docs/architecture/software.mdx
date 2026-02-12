@@ -15,7 +15,7 @@ I'm used to Debian and Ubuntu so I generally stick to the latest version of Ubun
 
 Caddy is configured to host static sites found at `/srv/www/<site>/current`.
 
-Currently it hosts the main site, `infrastructure.paultibbetts.uk` (this one), and one for my development environment.
+Currently it hosts the main site, `infra.paultibbetts.uk` (this one), and one for my development environment.
 
 The `/current` means I can do "zero-downtime deployments" where I can upload deployments to a new directory, like `/srv/www/<site>/releases/123`, and then create a symbolic-link to `/srv/www/<site>/current` so I don't need to restart Caddy to make deployments live.
 

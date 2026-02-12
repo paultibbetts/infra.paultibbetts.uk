@@ -1,5 +1,5 @@
 [project]
-name = "ansible.infrastructure.paultibbetts.uk"
+name = "ansible.infra.paultibbetts.uk"
 version = "0.1.0"
 description = "The Ansible for the infrastructure that makes up paultibbetts.uk"
 readme = "README.md"

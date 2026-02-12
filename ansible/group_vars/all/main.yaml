@@ -1,7 +1,7 @@
 web_sites_root: "/srv/www"
 web_sites:
   - "paultibbetts.uk"
-  - "infrastructure.paultibbetts.uk"
+  - "infra.paultibbetts.uk"
   - "dev.paultibbetts.uk"
 
 web_deploy_user: "deploy"

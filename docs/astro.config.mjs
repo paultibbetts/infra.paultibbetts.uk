@@ -6,8 +6,8 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
   integrations: [
     starlight({
-      title: 'infrastructure.paultibbetts.uk',
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/paultibbetts/infrastructure.paultibbetts.uk' }],
+      title: 'infra.paultibbetts.uk',
+      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/paultibbetts/infra.paultibbetts.uk' }],
       sidebar: [
         { label: 'Index', link: '/' },
         {

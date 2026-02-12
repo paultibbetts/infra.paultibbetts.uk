@@ -4,7 +4,7 @@ locals {
   web_subdomains = {
     apex  = "@"
     www   = "www"
-    infra = "infrastructure"
+    infra = "infra"
     dev   = "dev"
   }
 
