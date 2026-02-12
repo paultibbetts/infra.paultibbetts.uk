@@ -3,5 +3,6 @@
   become: true
   roles:
     - { role: server, tags: [server] }
+    - { role: firewall, tags: [firewall] }
     - { role: web, tags: [web] }
     - { role: paultibbetts.caddy, tags: [caddy] }

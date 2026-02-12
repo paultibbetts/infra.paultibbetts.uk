@@ -1,0 +1,265 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Debian/Ubuntu only
+  ansible.builtin.assert:
+    that: ansible_facts.os_family == "Debian"
+    fail_msg: "The firewall role targets Debian/Ubuntu with UFW."
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Ensure ufw package is installed
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Detect ufw binary
+  ansible.builtin.command: sh -c "command -v ufw"
+  register: firewall_ufw_bin
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Compute effective SSH allow ports
+  ansible.builtin.set_fact:
+    firewall_effective_ssh_ports: >-
+      {{
+        (
+          [firewall_ssh_port | string]
+          + (
+            [ansible_port | string]
+            if ((firewall_allow_ansible_port | bool) and (ansible_port is defined))
+            else []
+          )
+        ) | unique
+      }}
+  tags:
+    - firewall
+    - firewall_prep
+    - firewall_enforce
+
+- name: Fail early in check mode when ufw is not installed yet
+  ansible.builtin.assert:
+    that:
+      - firewall_ufw_bin.rc == 0
+    fail_msg: >-
+      UFW is not installed yet, so firewall rule tasks cannot run in check mode.
+      Run the prep phase once without --check, then rerun with --check.
+  when: ansible_check_mode
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Ensure UFW IPv6 mode is configured
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: "^IPV6="
+    line: "IPV6={{ 'yes' if (firewall_ipv6 | bool) else 'no' }}"
+    create: true
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Allow SSH from any source
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: "{{ firewall_ssh_proto }}"
+  loop: "{{ firewall_effective_ssh_ports }}"
+  when:
+    - firewall_allow_ssh | bool
+    - firewall_ssh_sources | length == 0
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Allow SSH from configured source CIDRs
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.1 }}"
+    proto: "{{ firewall_ssh_proto }}"
+    src: "{{ item.0 }}"
+  loop: "{{ firewall_ssh_sources | product(firewall_effective_ssh_ports) | list }}"
+  when:
+    - firewall_allow_ssh | bool
+    - firewall_ssh_sources | length > 0
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Allow web ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: "{{ firewall_web_tcp_ports }}"
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Apply additional firewall rules
+  community.general.ufw:
+    rule: "{{ item.rule }}"
+    direction: "{{ item.direction | default(omit) }}"
+    src: "{{ item.src | default(omit) }}"
+    dest: "{{ item.dest | default(omit) }}"
+    port: "{{ item.port | default(omit) }}"
+    proto: "{{ item.proto | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+    route: "{{ item.route | default(omit) }}"
+  loop: "{{ firewall_extra_rules }}"
+  tags:
+    - firewall
+    - firewall_prep
+
+- name: Safety check before enforce phase
+  ansible.builtin.assert:
+    that:
+      - (firewall_allow_ssh | bool) or firewall_default_incoming_policy != "deny" or (firewall_allow_potential_lockout | bool)
+      - ansible_port is not defined or (ansible_port | string) in firewall_effective_ssh_ports
+    fail_msg: >-
+      Refusing to apply an inbound deny policy without SSH allow rules.
+      Set firewall_allow_ssh=true, or set firewall_allow_potential_lockout=true
+      if you intentionally want to proceed.
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Schedule firewall rollback on remote host
+  ansible.builtin.shell: >
+    nohup sh -c 'sleep {{ firewall_rollback_delay_seconds }};
+    ufw --force disable' >/tmp/ansible-firewall-rollback.log 2>&1 &
+    echo $!
+  register: firewall_rollback_pid
+  changed_when: true
+  when:
+    - firewall_rollback_enabled | bool
+    - firewall_enabled | bool
+    - firewall_default_incoming_policy == "deny"
+    - not ansible_check_mode
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Read current UFW status
+  ansible.builtin.command: ufw status verbose
+  register: firewall_ufw_status_verbose
+  changed_when: false
+  check_mode: false
+  environment:
+    LC_ALL: C
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Cache current UFW status text
+  ansible.builtin.set_fact:
+    firewall_ufw_status_text: "{{ firewall_ufw_status_verbose.stdout | lower }}"
+    firewall_routed_policy_satisfied: >-
+      {{
+        ((firewall_default_routed_policy | lower) ~ ' (routed)') in (firewall_ufw_status_verbose.stdout | lower)
+        or
+        (
+          (firewall_default_routed_policy | lower) == 'deny'
+          and 'disabled (routed)' in (firewall_ufw_status_verbose.stdout | lower)
+        )
+      }}
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Set default incoming policy
+  ansible.builtin.command:
+    argv:
+      - ufw
+      - --force
+      - default
+      - "{{ firewall_default_incoming_policy }}"
+      - incoming
+  changed_when: true
+  async: "{{ firewall_command_timeout_seconds | int }}"
+  poll: 1
+  environment:
+    LC_ALL: C
+  when:
+    - firewall_ufw_status_text is not search((firewall_default_incoming_policy | lower) ~ ' \\(incoming\\)')
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Set default outgoing policy
+  ansible.builtin.command:
+    argv:
+      - ufw
+      - --force
+      - default
+      - "{{ firewall_default_outgoing_policy }}"
+      - outgoing
+  changed_when: true
+  async: "{{ firewall_command_timeout_seconds | int }}"
+  poll: 1
+  environment:
+    LC_ALL: C
+  when:
+    - firewall_manage_outgoing_policy | bool
+    - firewall_ufw_status_text is not search((firewall_default_outgoing_policy | lower) ~ ' \\(outgoing\\)')
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Set default routed policy
+  ansible.builtin.command:
+    argv:
+      - ufw
+      - --force
+      - default
+      - "{{ firewall_default_routed_policy }}"
+      - routed
+  changed_when: true
+  async: "{{ firewall_command_timeout_seconds | int }}"
+  poll: 1
+  environment:
+    LC_ALL: C
+  when:
+    - firewall_manage_routed_policy | bool
+    - not firewall_routed_policy_satisfied
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Ensure UFW state
+  ansible.builtin.command:
+    argv:
+      - ufw
+      - --force
+      - "{{ 'enable' if (firewall_enabled | bool) else 'disable' }}"
+  changed_when: true
+  async: "{{ firewall_command_timeout_seconds | int }}"
+  poll: 1
+  environment:
+    LC_ALL: C
+  when:
+    - ((firewall_enabled | bool) and (firewall_ufw_status_text is search('(?m)^status:\\s+inactive$'))) or
+      ((not (firewall_enabled | bool)) and (firewall_ufw_status_text is search('(?m)^status:\\s+active$')))
+  tags:
+    - firewall
+    - firewall_enforce
+
+- name: Cancel firewall rollback on success
+  ansible.builtin.shell: "kill {{ firewall_rollback_pid.stdout | trim }} >/dev/null 2>&1 || true"
+  changed_when: false
+  when:
+    - firewall_rollback_enabled | bool
+    - firewall_rollback_pid is defined
+    - (firewall_rollback_pid.stdout | default('') | trim | length) > 0
+    - not ansible_check_mode
+  tags:
+    - firewall
+    - firewall_enforce

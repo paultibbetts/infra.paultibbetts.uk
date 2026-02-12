@@ -1,0 +1,27 @@
+#SPDX-License-Identifier: MIT-0
+---
+firewall_enabled: true
+firewall_ipv6: true
+firewall_allow_potential_lockout: false
+
+firewall_default_incoming_policy: deny
+firewall_default_outgoing_policy: allow
+firewall_default_routed_policy: deny
+firewall_manage_outgoing_policy: false
+firewall_manage_routed_policy: false
+
+firewall_allow_ssh: true
+firewall_ssh_port: "22"
+firewall_allow_ansible_port: true
+firewall_ssh_proto: tcp
+firewall_ssh_sources: []
+
+firewall_web_tcp_ports:
+  - "80"
+  - "443"
+
+firewall_extra_rules: []
+
+firewall_rollback_enabled: true
+firewall_rollback_delay_seconds: 180
+firewall_command_timeout_seconds: 30

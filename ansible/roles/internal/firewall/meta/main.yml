@@ -1,0 +1,11 @@
+#SPDX-License-Identifier: MIT-0
+---
+galaxy_info:
+  author: Paul Tibbetts
+  description: UFW firewall baseline
+  company: paultibbetts.uk
+  license: MIT
+  min_ansible_version: "2.14"
+  galaxy_tags: []
+
+dependencies: []
