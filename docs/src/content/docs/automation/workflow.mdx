@@ -1,0 +1,99 @@
+---
+title: Workflow
+description: How I use automation to make changes to my infrastructure.
+---
+import { Code } from '@astrojs/starlight/components';
+
+I use automation tools as much as possible but a lot of managing the infrastructure is done manually.
+
+## Network/Hardware
+
+Terraform is used to manage the network and hardware, and I run it manually when I want to change something.
+
+### Network
+
+To change the network settings, to add a new subdomian for example, I edit the Terraform code in `terraform/dns.tf`.
+
+I then run
+
+```sh
+terraform apply
+````
+
+to change the network settings.
+
+### Hardware
+
+To change the hardware I edit the `terraform/web.tf` file.
+
+I would do this to change the settings of the Pi, or to change the Pi to a VPS.
+
+I then run
+
+```sh
+terraform apply
+````
+
+to change the hardware.
+
+## Software
+
+Ansible is used to manage the software, and I run it manually when I want to change something.
+
+To change the software, to add a new website to host for example, I edit the Ansible code.
+
+I then run
+
+```sh
+ansible-playbook site.yaml
+````
+
+to apply the `site.yaml` playbook which contains the whole setup. The name `site` is just an old name I keep using for the "main" Ansible playbook.
+
+I can run only parts of the setup using tags:
+
+```sh
+ansible-playbook site.yaml --tags web, caddy
+```
+
+which I would do if I added a new site to deploy (part of the `web` role) and changed the Caddyfile to serve it (part of the `caddy` role).
+
+The playbook and the roles it uses are set up so that I don't need to edit them directly to make simple changes like adding a new site to host.
+
+To make a simple change, like adding a new site to host, I would edit the `ansible/group_vars/all/main.yaml` file:
+
+import groupvars from '/../ansible/group_vars/all/main.yaml?raw';
+
+<Code code={groupvars} lang="yaml" title="ansible/group_vars/all/main.yaml" />
+
+
+### uv
+
+Ansible is written in Python.
+
+I use [uv](https://docs.astral.sh/uv/) to install and manage Python versions and dependencies, because it's reliable and 100x faster than Pip, and so the command to run the playbook is:
+
+```sh
+uv sync
+uv run ansible-playbook site.yaml
+```
+
+### make
+
+I use [make](https://www.gnu.org/software/make/) to collect the commands that I use when working with Ansible.
+
+These are listed in a `Makefile` as a reference and also to run using `make <target>`.
+
+import makefile from '/../ansible/Makefile?raw';
+
+<Code code={makefile} lang="make" title="Makefile" />
+
+where `site` is the recipe that runs the Ansible playbook.
+
+## Deployments
+
+Deployments happen when the main branch of the code for the website gets updated.
+
+I can trigger a deployment by making a change to one of the websites and it will be live a few minutes later.
+
+This process is fully automated and deployed websites should always be in sync with their code.

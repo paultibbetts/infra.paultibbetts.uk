@@ -1,0 +1,20 @@
+---
+title: Why Ansible?
+description: Answering why I use Ansible.
+---
+
+[Ansible](https://docs.ansible.com/) is my prefered way of configuring software on bare metal machines.
+
+## It uses SSH
+
+Ansible uses SSH, which is already installed, so I find it easier to work
+with than alternatives that need an agent on the server.
+
+## Idempotency
+
+Ansible is _idempotent_ meaning it (should) always end up as what you wrote down, every time.
+
+## It handles secrets
+
+[ansible-vault](https://docs.ansible.com/projects/ansible/latest/cli/ansible-vault.html) means I can leave secrets in code next to where they get used.
+

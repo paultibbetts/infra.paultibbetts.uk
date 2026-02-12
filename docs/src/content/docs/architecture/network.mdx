@@ -1,0 +1,46 @@
+---
+title: Network
+description: Which networking tech is used to host my website.
+---
+
+The networking tech in use at `paultibbetts.uk`.
+
+## DNS
+
+My domain is registered with [Heart Internet](https://www.heartinternet.uk/).
+
+They don't leak my personal data when you do a [whois query on the domain](https://www.whois.com/whois/paultibbetts.uk) so I see no reason to move elsewhere.
+
+I use [Cloudflare](https://www.cloudflare.com/) to manage it. This is because they have an API available which means I can use a tool to write down my domain settings as code.
+
+I do not use Cloudflare's proxy.
+
+## Proxy
+
+The server that I use is on an IPv6-only network. This means that users on IPv4-only networks won't be able to reach it.
+
+I use an IPv4 - IPv6 proxy to make the server available for all users. I then configured the server to only accept requests from the proxy.
+
+### Proxy Protocol
+
+Because all traffic is going through the proxy I would normally not know where it originated from, so I have enabled [proxy_protocol](https://www.haproxy.com/blog/use-the-proxy-protocol-to-preserve-a-clients-ip-address) to allow the proxy to forward on the original request details.
+
+I don't use this original request information right now.
+
+## TLS Certificates
+
+TLS certificates are managed by the web server itself and come from [Lets Encrypt](https://letsencrypt.org/).
+
+I use the [DNS-01](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) challenge because that still works now I've locked down all traffic to the web server to only be allowed from the proxy.
+
+## Subdomains
+
+My main site is available at the "apex": `paultibbetts.uk`.
+
+`www` redirects from `www.paultibbetts.uk` to the apex: `paultibbetts.uk`.
+
+This site is hosted at `infrastructure.paultibbetts.uk`.
+
+I also host another site for my developer environment scripts at `dev.paultibbetts.uk`.
+
+Each of these must be added to the proxy I am using.

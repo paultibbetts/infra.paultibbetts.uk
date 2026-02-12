@@ -1,0 +1,26 @@
+---
+title: Hardware
+description: The hardware I use for my website infrastructure.
+---
+
+My site is hosted on a Raspberry Pi 4 from [Mythic Beasts](https://www.mythic-beasts.com/) that is located in London, UK.
+
+There is no good reason for this, I just thought it would be cool.
+
+## Role
+
+The Pi hosts multiple sites and their assets.
+
+It also manages the TLS certificates for each site.
+
+## Storage
+
+The Pi only has Network File Storage, which means it's not great for running Docker containers.
+
+Because of this I run the web server as a binary. NFS is fine for serving static files.
+
+## IPv6-only network
+
+The Pi is on an IPv6-only network and this means users on IPv4-only networks cannot reach it.
+
+I use an IPv4 - IPv6 proxy to make the Pi reachable to all users.

@@ -1,0 +1,20 @@
+---
+title: Why not Docker?
+description: Why I didn't use Docker for this.
+---
+
+I based my infrastructure around the Raspberry Pi that I rented from Mythic Beasts.
+
+As it has only Network File Storage I [found it not suitable](https://paultibbetts.uk/2025/12/30/pangolin-on-a-pi/) for running Docker containers.
+
+This left me with the alternative that I run the server as a binary and manage the files for the site myself, and as my site is static content that worked out fine.
+
+## Docker would be overkill
+
+The benefit of static content is it's easy to serve, and can be handled by a Content Delivery Network, which means there isn't much need of a single powerful server.
+
+Docker is great for packaging complex dynamic apps, but isn't needed for static content like this.
+
+I would use it for anything else, to standardise and containerise it and make it easier to work with.
+
+But for a static site like mine it isn't necessary.

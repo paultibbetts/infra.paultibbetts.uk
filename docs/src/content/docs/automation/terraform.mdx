@@ -1,0 +1,80 @@
+---
+title: Terraform
+description: How I use Terraform to host my website.
+---
+import { Code } from '@astrojs/starlight/components';
+
+[Terraform](https://www.terraform.io/) is used to manage the network and hardware settings.
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+
+- terraform/ network/hardware
+  - backend.tf configures the state file
+  - dns.tf configures domain stuff
+  - providers.tf defines the providers I'm using
+  - vars.tf sets what to pass in when running Terraform
+  - web.tf configures my web server
+
+</FileTree>
+
+## DNS
+
+import terraformDNS from '/../terraform/dns.tf?raw';
+
+<Code code={terraformDNS} lang="tf" title="terraform/dns.tf" />
+
+Here Terraform uses Cloudflare to set all the records for my domain.
+
+## Web
+
+import terraformWeb from '/../terraform/web.tf?raw';
+
+<Code code={terraformWeb} lang="tf" title="terraform/web.tf" />
+
+Here Terraform requests the Pi and configures the Proxy endpoints using its IP address.
+
+It also creates an `ansible_host` for the Pi so that Ansible can target it to configure it.
+
+## State file
+
+The state file, that records the current state of the infrastructure that Terraform manages, is hosted on [MinIO](https://www.min.io/) running on my NAS in my homelab.
+
+This is configured using:
+
+import terraformBackend from '/../terraform/backend.tf?raw';
+
+<Code code={terraformBackend} lang="tf" title="terraform/backend.tf" />
+
+## Variables
+
+The variables that are my setup go in `terraform/locals.tf`:
+
+import terraformLocals from '/../terraform/locals.tf?raw';
+
+<Code code={terraformLocals} lang="tf" title="terraform/locals.tf" />
+
+## Secrets
+
+Terraform needs a few secrets passing to it to work.
+
+Because it manages the domain using Cloudflare it needs a Cloudflare API token passing to it.
+
+MinIO, which is where the state file is hosted, also needs to be told the key to use.
+
+These secrets are exported as environment variables and read by Terraform:
+
+```sh
+source secrets.sh
+```
+
+where `secrets.sh`:
+
+import terraformSecrets from '/../terraform/secrets.sh?raw';
+
+<Code code={terraformSecrets} lang="sh" title="terraform/secrets.sh" />
+
+The script grabs the secrets from a [pass](https://www.passwordstore.org/) vault before exporting them for future commands to use.
+
+

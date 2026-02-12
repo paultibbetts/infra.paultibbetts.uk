@@ -1,0 +1,31 @@
+---
+title: Continuous Deployment
+description: How Continuous Deployment is used
+---
+import { Code } from '@astrojs/starlight/components';
+
+Continuous Integration is used to run a deploy script for each web site hosted by the server,
+which gives me Continuous Deployment.
+
+## GitHub Actions
+
+The code for my sites is hosted on GitHub, where I can use [GitHub Actions](https://docs.github.com/en/actions) for Continuous Integration.
+
+GitHub Actions is used to run a workflow when the site is updated.
+
+The workflow that runs when this site is updated is:
+
+import githubWorkflowDeploy from '/../.github/workflows/deploy.yaml?raw';
+
+<Code code={githubWorkflowDeploy} lang="yaml" title=".github/workflows/deploy.yaml" />
+
+which builds the site and runs `docs/scripts/deploy.sh` whenever the `main` branch is updated.
+
+## Deploy script
+
+A shell script deploys the generated site to the web server:
+
+import deployScript from '/scripts/deploy.sh?raw';
+
+<Code code={deployScript} lang="sh" title="scripts/deploy.sh" />
+

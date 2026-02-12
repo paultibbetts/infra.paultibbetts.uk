@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection('docs', (entry) =>
+  entry.id.startsWith('decisions/') && entry.id !== 'decisions/index'
+);
+
+const decisions = entries
+  .filter((e) => e.data?.title) // optional: drop untitled
+  .sort((a, b) => (a.data.title ?? '').localeCompare(b.data.title ?? ''));
+---
+
+<ul>
+  {decisions.map((entry) => (
+    <li>
+      <a href={`/${entry.id.replace(/\.(md|mdx)$/, '')}/`}>{entry.data.title}</a>
+    </li>
+  ))}
+</ul>

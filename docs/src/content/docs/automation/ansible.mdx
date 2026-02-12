@@ -1,0 +1,100 @@
+---
+title: Ansible
+description: I use Ansible to configure servers.
+---
+import { Code } from '@astrojs/starlight/components';
+
+Ansible is used to configure the web server to host multiple sites.
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+
+- ansible/ software
+  - group_vars/all/
+    - main.yaml settings
+    - vault.yaml encrypted secrets
+  - roles/ ansible code to run tasks
+    - galaxy/ package manager roles
+      - paultibbetts.caddy/ public role to install and manage caddy
+    - internal/ private roles
+      - server/ configures server settings
+      - web/ configures multiple static sites
+  - inventory.yaml set up to use Terraform managed resources
+  - site.yaml playbook of roles that does the whole setup
+
+</FileTree>
+
+## Inventory
+
+Ansible can use the same inventory that Terraform manages by using the [Terraform plugin](https://paultibbetts.uk/2025/06/13/using-terraform-as-the-inventory-for-ansible/).
+
+This is configured using:
+
+import ansibleInventory from '/../ansible/inventory.yaml?raw';
+
+<Code code={ansibleInventory} lang="yaml" title="inventory.yaml" />
+
+## Site
+
+The whole setup is declared in `site.yaml`:
+
+import ansibleSite from '/../ansible/site.yaml?raw';
+
+<Code code={ansibleSite} lang="yaml" title="site.yaml" />
+
+## Roles
+
+Ansible sets up the following roles:
+
+### Server
+
+This internal role sets up the machine to act as a server.
+
+import ansibleServerTasks from '/../ansible/roles/internal/server/tasks/main.yaml?raw';
+
+<Code code={ansibleServerTasks} lang="yaml" title="roles/internal/server/tasks/main.yaml" />
+
+### Web
+
+This internal role sets up the server to host multiple websites.
+
+import ansibleWebTasks from '/../ansible/roles/internal/web/tasks/main.yaml?raw';
+
+<Code code={ansibleWebTasks} lang="yaml" title="roles/internal/web/tasks/main.yaml" />
+
+### Caddy
+
+This role is available on [Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/paultibbetts/caddy/).
+
+It installs a custom build of Caddy, that includes the Cloudflare plugin, and configures it to serve web content.
+
+The role writes the Caddyfile that configures Caddy using a template:
+
+import ansibleCaddyfile from '/../ansible/templates/Caddyfile.j2?raw';
+
+<Code code={ansibleCaddyfile} lang="yaml" title="templates/Caddyfile.j2" />
+
+## Group vars
+
+The variables that configure each role are in `ansible/group_vars/all/main.yaml`:
+
+import groupvars from '/../ansible/group_vars/all/main.yaml?raw';
+
+<Code code={groupvars} lang="yaml" title="ansible/group_vars/all/main.yaml" />
+
+## Secrets
+
+Ansible does not need any secrets passing for it to work, since it uses SSH to connect to my server,
+but it does need to know my Cloudflare API token to pass to Caddy for it to use.
+
+I do this using [ansible-vault](https://docs.ansible.com/projects/ansible/latest/cli/ansible-vault.html) where the Cloudflare API token is encrypted and saved into the codebase
+and is available for the Caddy role to write it to the correct file for Caddy to be able to use it.
+
+Right now it looks like:
+
+import ansibleVault from '/../ansible/group_vars/all/vault.yaml?raw';
+
+<Code code={ansibleVault} lang="yaml" title="group_vars/all/vault.yaml" />
+
+If you have the right `vault-pass.txt` file, like I do, it can decrypt it and use it in the role.

@@ -1,0 +1,39 @@
+---
+title: Why Terraform?
+description: Answsering why I use Terraform.
+---
+
+I learnt [Terraform](https://www.terraform.io/) years ago, before the licensing problem that made [OpenTofu](https://opentofu.org/), which I am still yet to try.
+
+I use it to provision the physical part of the infrastructure that makes up a web project.
+
+It works like a state machine, where it translates what you wrote down into the API commands to run with your specified provider to get you those things.
+
+## Reproducible
+
+There are a few things that go into my website, and now they're all laid out in code.
+
+In theory I can run
+
+```sh
+terraform apply
+```
+
+and my infrastructure will end up as what I wrote down.
+
+## Version controlled
+
+As code I get the benefits of keeping the current state of my infrastructure in version control:
+
+- pull requests for changes
+- history of changes
+- [SemVer](https://semver.org/)
+- an audit trail
+
+## All in one place
+
+I set some of my infrastructure up years ago and had forgotten I needed so many TXT records on my domain.
+
+It wasn't until I checked to write this that I realised I had so many.
+
+Keeping my setup in one place helps me keep an eye on it all.

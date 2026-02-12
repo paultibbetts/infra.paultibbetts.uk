@@ -1,0 +1,9 @@
+vault-pass.txt
+*.retry
+
+roles/galaxy/
+
+__pycache__/
+*.pyc
+.venv/
+venv/

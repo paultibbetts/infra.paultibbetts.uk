@@ -1,0 +1,59 @@
+---
+title: Architecture
+description: An overview of the architecture of my website.
+---
+
+This page provides a high-level overview of the architecture that runs `paultibbetts.uk`.
+
+## Goals
+
+- simple enough to operate myself
+- how I'd do it professionally
+- boring and reliable
+- written as code
+- portable
+- indie
+
+## Topology
+
+- **DNS**: Cloudflare manages the domain
+- **Network**: requests routed via an IPv4 to IPv6 proxy
+- **Compute**: Raspberry Pi 4 on an IPv6-only network
+- **Workloads**: Web server hosting multiple sites
+
+## Automation
+
+- **Hardware**: Terraform is used to configure hardware
+- **Software**: Ansible is used to configure software
+- **Continuous Deployment**: Git-based automations deploy updates from CI
+
+I manually run Terraform to change the hardware and Ansible to change the software.
+
+A deployment workflow has been added to the website's code so that each time it is changed
+a deployment is made to the web server.
+
+## Location
+
+- **Compute**: Raspberry Pi 4 hosted in London, UK
+
+## Redundancy
+
+- None
+
+Not of concern right now.
+
+## Backups
+
+My website uses a static site generator with its content tracked in Git and Infrastructure
+as Code means I have a reproducible way of re-creating the infrastructure.
+
+This means I don't need to take any backups of the setup because it's all driven by code.
+
+The code itself is backed up onto my NAS and is also available on GitHub.
+
+## Out of scope
+
+- be horizontally scalable
+- redundancy
+- self-host everything
+- be completely automated

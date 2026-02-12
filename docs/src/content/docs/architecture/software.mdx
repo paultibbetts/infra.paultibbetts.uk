@@ -1,0 +1,38 @@
+---
+title: Software
+description: The software I use to host my website.
+---
+
+I use [Caddy](https://caddyserver.com/) as a web server to host multiple websites.
+
+## OS
+
+I use a Linux-based operating system on my server.
+
+I'm used to Debian and Ubuntu so I generally stick to the latest version of Ubuntu server.
+
+## Web server
+
+Caddy is configured to host static sites found at `/srv/www/<site>/current`.
+
+Currently it hosts the main site, `infrastructure.paultibbetts.uk` (this one), and one for my development environment.
+
+The `/current` means I can do "zero-downtime deployments" where I can upload deployments to a new directory, like `/srv/www/<site>/releases/123`, and then create a symbolic-link to `/srv/www/<site>/current` so I don't need to restart Caddy to make deployments live.
+
+### TLS
+
+Caddy is configured (out of the box) to manage TLS certificates for each site it serves.
+
+A custom build of Caddy that includes a plugin for Cloudflare is used so I can do [DNS-01](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) challenges for Lets Encrypt when I request new certificates for subdomains.
+
+## Continuous Deployment
+
+Continuous Integration is used to deploy updates.
+
+I've added a workflow to each hosted site that triggers when the site is updated, which builds the site and runs the deployment script. This script will copy the built assets up to the server, and then change `/srv/www/<site>/current` to point to the latest deployment.
+
+## Backups
+
+The entire setup is written in code, from the Infrastructure to the sites themselves, so I don't take any backups of the server.
+
+I can reproduce it all using scripts if I ever needed to.

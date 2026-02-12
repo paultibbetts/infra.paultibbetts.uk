@@ -1,0 +1,32 @@
+---
+title: Automation
+description: A look at the automation tools and process I use.
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+
+- terraform/ automation tool
+  - dns.tf configures Network
+  - web.tf configures Hardware
+- ansible/  automation tool
+  - site.yaml configures Software
+- .ci/ Continuous Integration
+  - workflows/ that run when code changes
+- Makefile task runner
+- scripts/ ran by CI workflows
+  - deploy.sh Continuous Deployment
+
+</FileTree>
+
+My infrastructure is written down as code, called "Infrastructure as Code".
+
+import { LinkCard } from '@astrojs/starlight/components';
+
+<LinkCard title="Why Infrastructure as Code?" href="/decisions/why-iac/" />
+
+I use [Terraform](/automation/terraform) to configure hardware and [Ansible](/automation/ansible) to configure software.
+
+Continuous Integration is used by each site to run its deployment script when it gets updated, which gives me [Continuous Deployment](/automation/cd).
+

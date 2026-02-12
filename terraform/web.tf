@@ -1,21 +1,12 @@
-locals {
-  pi_identifier = var.pi_identifier
-  domain        = "paultibbetts.uk"
-  subdomains = {
-    apex = "@"
-    www  = "www"
-    dev  = "dev"
-  }
-}
 resource "mythicbeasts_pi" "web" {
-  identifier = local.pi_identifier
+  identifier = var.pi_identifier
   disk_size  = 50
   model      = 4
   memory     = 4096
 }
 
 resource "mythicbeasts_proxy_endpoint" "endpoint" {
-  for_each = local.subdomains
+  for_each = local.web_subdomains
 
   domain         = local.domain
   hostname       = each.value
