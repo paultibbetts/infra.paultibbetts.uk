@@ -21,6 +21,49 @@ This page provides a high-level overview of the architecture that runs `paultibb
 - **Compute**: Raspberry Pi 4 on an IPv6-only network
 - **Workloads**: Web server hosting multiple sites
 
+## Diagram
+
+```d2
+direction: down
+
+user: {
+  shape: person
+}
+cf: "Cloudflare" {
+  style.stroke-dash: 5
+  dns: "DNS" {
+    shape: cloud
+  }
+}
+
+mb: "Mythic Beasts" {
+  style.stroke-dash: 5
+  proxy: "IPv4 to IPv6 Proxy" {
+    shape: hexagon
+  }
+  pi: "Raspberry Pi 4" {
+      shape: rectangle
+      web: "Caddy" {
+        shape: package
+      }
+      site: "/srv/www/paultibbetts.uk" {
+        shape: stored_data
+      }
+  }
+}
+
+user <-> cf.dns: "resolve paultibbetts.uk" {
+  style.stroke-dash: 5
+}
+cf.dns -- mb.proxy: "CNAME" {
+  style.stroke-dash: 5
+}
+user <-> mb.proxy: "HTTPS"
+
+mb.proxy <-> mb.pi: "IPv6"
+mb.pi.web -> mb.pi.site: "serves"
+```
+
 ## Automation
 
 - **Hardware**: Terraform is used to configure hardware
