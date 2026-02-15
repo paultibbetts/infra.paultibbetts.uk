@@ -38,6 +38,7 @@ export default defineConfig({
 
     ],
   }), d2({
+    layout: "elk",
     sketch: true,
     experimental: {
       useD2js: true,

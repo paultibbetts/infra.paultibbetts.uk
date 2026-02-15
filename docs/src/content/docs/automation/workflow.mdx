@@ -97,3 +97,59 @@ Deployments happen when the main branch of the code for the website gets updated
 I can trigger a deployment by making a change to one of the websites and it will be live a few minutes later.
 
 This process is fully automated and deployed websites should always be in sync with their code.
+
+```d2
+direction: down
+
+you: "Paul" {
+  shape: person
+}
+
+github: "GitHub" {
+  style.stroke-dash: 5
+
+  repo: "code"
+  workflow: ".github/workflows/deploy.yaml"
+
+  build: "Build job" {
+    artifact: "docs/dist"
+  }
+  deploy: "Deploy job" {
+    script: "docs/scripts/deploy.sh" {
+      shape: package
+      upload_release: "1. Upload docs/dist to releases/"
+      switch_current: "2. Point current -> releases/<timestamp>"
+    }
+  }
+}
+
+mb: "Mythic Beasts" {
+  style.stroke-dash: 5
+
+  pi: "Raspberry Pi" {
+    shape: rectangle
+
+
+    releases.timestamp: "releases/<timestamp>" {
+      shape: stored_data
+    }
+
+    releases.current: "releases/current"
+    caddy: "Caddy" {
+      shape: package
+    }
+  }
+}
+
+you -> github.repo: "pushes to main"
+github.repo -> github.workflow: "triggers"
+github.workflow -> github.build: "1. build a release"
+github.workflow -> github.deploy: "2. deploy the release"
+
+github.deploy.script.upload_release -> github.build.artifact: "download"
+github.deploy.script.upload_release -> mb.pi.releases.timestamp: "upload"
+github.deploy.script.switch_current -> mb.pi.releases.current: "switch symlink"
+
+mb.pi.releases.current -> mb.pi.releases.timestamp: "points to latest release"
+mb.pi.caddy -> mb.pi.releases.current: "serve static files"
+```
