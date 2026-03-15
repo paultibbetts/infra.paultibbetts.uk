@@ -25,6 +25,18 @@ locals {
         content = "eu.micro.blog"
       }
 
+      microsoft_webmaster_tools = {
+        type    = "CNAME"
+        name    = "7a1aef5690ea3c9c1ba23cb97b83da6d"
+        content = "verify.bing.com"
+      }
+
+      google_search_console = {
+        type    = "TXT"
+        name    = "@"
+        content = "google-site-verification=KdhaJN7FNL4MnESeK7HbdYbnv2M6LY602PnIMWQ6BQw"
+      }
+
       atproto = {
         type    = "TXT"
         name    = "_atproto"
