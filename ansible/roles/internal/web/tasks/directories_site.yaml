@@ -1,10 +1,10 @@
 ---
-- name: Prepare deploy structure
+- name: Prepare deploy structure for {{ site_name }}
   community.general.deploy_helper:
     path: "{{ site_root }}"
     state: present
 
-- name: Ensure deploy root directories are writable by deploy
+- name: Ensure deploy root directories are writable by deploy for {{ site_name }}
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -16,7 +16,7 @@
     - "{{ site_root }}/releases"
     - "{{ site_root }}/shared"
 
-- name: Ensure shared media directory exists
+- name: Ensure shared media directory exists for {{ site_name }}
   ansible.builtin.file:
     path: "{{ site_root }}/shared/media"
     state: directory
@@ -25,19 +25,19 @@
     mode: "2775"
   when: site_name in web_shared_media_sites
 
-- name: Check whether current symlink exists
+- name: Check whether current symlink exists for {{ site_name }}
   ansible.builtin.stat:
     path: "{{ site_root }}/current"
   register: site_current_stat
 
-- name: Compute new release paths (no directory created)
+- name: Compute new release paths for {{ site_name }}
   community.general.deploy_helper:
     path: "{{ site_root }}"
     state: query
     release: "{{ ansible_facts.date_time.iso8601_basic_short }}"
   when: not site_current_stat.stat.exists
 
-- name: Create new release directory (deploy_helper does not create it)
+- name: Create new release directory for {{ site_name }}
   ansible.builtin.file:
     path: "{{ ansible_facts['deploy_helper']['new_release_path'] }}"
     state: directory
@@ -46,7 +46,7 @@
     mode: "2775"
   when: not site_current_stat.stat.exists
 
-- name: Create initial release content (placeholder)
+- name: Create initial release content for {{ site_name }}
   ansible.builtin.copy:
     dest: "{{ ansible_facts['deploy_helper']['new_release_path'] }}/index.html"
     content: |
@@ -65,7 +65,7 @@
     mode: "0664"
   when: not site_current_stat.stat.exists
 
-- name: Finalize initial release (switch current symlink)
+- name: Finalize initial release for {{ site_name }}
   community.general.deploy_helper:
     path: "{{ site_root }}"
     release: "{{ ansible_facts['deploy_helper']['new_release'] }}"

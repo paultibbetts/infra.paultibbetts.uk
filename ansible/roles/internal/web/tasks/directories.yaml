@@ -3,6 +3,7 @@
   ansible.builtin.include_tasks: directories_site.yaml
   loop: "{{ web_sites }}"
   loop_control:
+    label: "{{ web_site }}"
     loop_var: web_site
   vars:
     site_name: "{{ web_site }}"
