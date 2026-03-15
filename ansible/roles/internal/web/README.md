@@ -13,6 +13,7 @@ What this role configures
   - `<site_root>/releases`
   - `<site_root>/shared`
   - `<site_root>/current` (symlink target)
+- For each site in `web_shared_media_sites`, prepares `<site_root>/shared/media` for persistent files served at `/media/*`.
 - If `<site_root>/current` does not exist, creates an initial timestamped release with a placeholder `index.html` and finalizes the symlink.
 - Keeps `web_keep_releases` releases when finalizing initial bootstrap.
 
@@ -33,6 +34,7 @@ Defaults from `defaults/main.yml`:
 | --- | --- | --- |
 | `web_group` | `web` | Group used for deploy user and site directories. |
 | `web_deploy_user` | `deploy` | Deploy user account name. |
+| `web_shared_media_sites` | `[]` | Sites that should expose `<site_root>/shared/media` at `/media/*`. |
 
 Required variables (no defaults in this role):
 
@@ -60,6 +62,8 @@ web_deploy_ssh_keys:
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA..."
 web_group: "deploy"
 web_keep_releases: 3
+web_shared_media_sites:
+  - "paultibbetts.uk"
 ```
 
 Example Playbook
@@ -77,3 +81,4 @@ Notes
 
 - This role bootstraps deploy structure and an initial placeholder release only when `current` is missing.
 - It does not publish new releases on subsequent runs when `current` already exists.
+- Files placed in `<site_root>/shared/media` are outside the release directories, so they survive deploys.

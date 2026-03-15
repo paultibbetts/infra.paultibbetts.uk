@@ -16,6 +16,15 @@
     - "{{ site_root }}/releases"
     - "{{ site_root }}/shared"
 
+- name: Ensure shared media directory exists
+  ansible.builtin.file:
+    path: "{{ site_root }}/shared/media"
+    state: directory
+    owner: "{{ web_deploy_user }}"
+    group: "{{ web_group }}"
+    mode: "2775"
+  when: site_name in web_shared_media_sites
+
 - name: Check whether current symlink exists
   ansible.builtin.stat:
     path: "{{ site_root }}/current"

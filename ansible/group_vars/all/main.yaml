@@ -3,6 +3,8 @@ web_sites:
   - "paultibbetts.uk"
   - "infra.paultibbetts.uk"
   - "dev.paultibbetts.uk"
+web_shared_media_sites:
+  - "paultibbetts.uk"
 
 web_deploy_user: "deploy"
 web_deploy_home: "/home/deploy"

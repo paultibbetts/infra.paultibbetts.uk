@@ -2,3 +2,4 @@
 ---
 web_group: "web"
 web_deploy_user: "deploy"
+web_shared_media_sites: []
