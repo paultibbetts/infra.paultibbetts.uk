@@ -1,0 +1,49 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "timezone": "Europe/London",
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
+      "groupName": "github actions"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["docs/**"],
+      "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
+      "groupName": "docs dependencies"
+    },
+    {
+      "matchManagers": ["terraform"],
+      "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
+      "groupName": "terraform dependencies"
+    },
+    {
+      "matchManagers": ["ansible-galaxy"],
+      "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
+      "groupName": "ansible galaxy dependencies"
+    },
+    {
+      "matchManagers": ["pep621", "uv"],
+      "matchFileNames": ["ansible/**"],
+      "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
+      "groupName": "ansible python dependencies"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["dependencies", "major"]
+    }
+  ]
+}
