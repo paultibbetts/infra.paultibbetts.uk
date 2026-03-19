@@ -26,6 +26,13 @@
       "groupName": "docs dependencies"
     },
     {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["docs/**"],
+      "matchPackageNames": ["astro", "@astrojs/starlight", "astro-d2"],
+      "groupName": "astro docs dependencies",
+      "separateMajorMinor": false
+    },
+    {
       "matchManagers": ["terraform"],
       "matchUpdateTypes": ["digest", "minor", "patch", "pin"],
       "groupName": "terraform dependencies"
