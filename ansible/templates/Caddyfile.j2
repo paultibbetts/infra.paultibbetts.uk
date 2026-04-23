@@ -25,6 +25,10 @@
 {{ site }} {
   import cf_tls
   route {
+{% if site == "paultibbetts.uk" %}
+    @feeds path_regexp feeds ^/(?:feed|.+/feed)\.xml$
+    header @feeds Access-Control-Allow-Origin "*"
+{% endif %}
 {% if site in web_shared_media_sites %}
     handle_path /media/* {
       root * {{ web_sites_root }}/{{ site }}/shared/media
