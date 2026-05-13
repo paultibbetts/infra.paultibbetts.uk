@@ -96,6 +96,12 @@ locals {
         content = "sig1.dkim.paultibbetts.uk.at.icloudmailadmin.com"
       }
 
+      dmarc = {
+        type    = "TXT"
+        name    = "_dmarc"
+        content = "v=DMARC1; p=none"
+      }
+
     }
   )
 }
