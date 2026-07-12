@@ -25,6 +25,12 @@ locals {
         content = "eu.micro.blog"
       }
 
+      media = {
+        type    = "CNAME"
+        name    = "media"
+        content = bunnynet_pullzone.media.cdn_domain
+      }
+
       microsoft_webmaster_tools = {
         type    = "CNAME"
         name    = "7a1aef5690ea3c9c1ba23cb97b83da6d"
@@ -105,4 +111,3 @@ locals {
     }
   )
 }
-

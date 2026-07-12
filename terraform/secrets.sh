@@ -1,4 +1,5 @@
 export TF_VAR_cloudflare_api_token=$(pass cloudflare_api_token_paultibbettsuk)
+export TF_VAR_bunnynet_api_key=$(pass bunnynet_api_key_paultibbettsuk)
 
 export AWS_ENDPOINT_URL_S3=$(pass minio_endpoint)
 export AWS_ACCESS_KEY_ID=$(pass minio_access_key)
