@@ -12,6 +12,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 - terraform/ network/hardware
   - backend.tf configures the state file
+  - bunny.tf configures the CDN for media files
   - dns.tf configures domain stuff
   - providers.tf defines the providers I'm using
   - vars.tf sets what to pass in when running Terraform
@@ -26,7 +27,6 @@ import terraformDNS from '/../terraform/dns.tf?raw';
 <Code code={terraformDNS} lang="tf" title="terraform/dns.tf" />
 
 Here Terraform uses Cloudflare to set all the records for my domain.
-
 ## Web
 
 import terraformWeb from '/../terraform/web.tf?raw';
@@ -36,7 +36,13 @@ import terraformWeb from '/../terraform/web.tf?raw';
 Here Terraform requests the Pi and configures the Proxy endpoints using its IP address.
 
 It also creates an `ansible_host` for the Pi so that Ansible can target it to configure it.
+## Bunny
 
+import terraformBunny from '/../terraform/bunny.tf?raw';
+
+<Code code={terraformBunny} lang="tf" title="terraform/bunny.tf" />
+
+Terraform uses this file to configure the "Storage Zone" (bucket) to store media files in and the "Pull Zone" (CDN) to serve them.
 ## State file
 
 The state file, that records the current state of the infrastructure that Terraform manages, is hosted on [MinIO](https://www.min.io/) running on my NAS in my homelab.
@@ -46,7 +52,6 @@ This is configured using:
 import terraformBackend from '/../terraform/backend.tf?raw';
 
 <Code code={terraformBackend} lang="tf" title="terraform/backend.tf" />
-
 ## Variables
 
 The variables that are my setup go in `terraform/locals.tf`:
@@ -62,6 +67,8 @@ Terraform needs a few secrets passing to it to work.
 Because it manages the domain using Cloudflare it needs a Cloudflare API token passing to it.
 
 MinIO, which is where the state file is hosted, also needs to be told the key to use.
+
+Media files are served through the Bunny.net CDN, and that needs an API token to configure.
 
 These secrets are exported as environment variables and read by Terraform:
 

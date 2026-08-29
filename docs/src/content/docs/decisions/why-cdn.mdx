@@ -1,0 +1,27 @@
+---
+title: Why use a CDN?
+description: Answering why I use a Content Delivery Network.
+---
+My website is static, but it still needs to deliver media files.
+
+Originally these files were stored directly on my server, which had a fixed amount of storage, so the amount was limited by the size of the disk in that server.
+
+I now store my media files in a Storage Zone (a.k.a "bucket") and use a Content Delivery Network to distribute them.
+
+## More storage
+
+The main reason for using a Storage Zone is that I am no longer limited by the size of the storage on my server, and the bucket can effectively expand forever to fit all of my files.
+
+## Performance
+
+A CDN caches copies of media files at edge locations closer to visitors. This reduces the distance the requests have to travel, so files are downloaded quicker.
+
+## Cost
+
+The server that I am renting has a fixed monthly cost, regardless of its usage. Files served by the CDN cost me money, but I expect that for the amount of visitors I have the cost of serving those files will still be way under the cost of the server.
+
+The Raspberry Pi I am using for a server right now costs about £7 per month, and I estimate the CDN to cost me only £1 per month. I will check back after using it for a while and update this.
+
+## See also
+
+- [Why Bunny.net?](why-bunny)
