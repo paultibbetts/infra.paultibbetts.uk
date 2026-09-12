@@ -10,7 +10,7 @@ terraform {
     }
     bunnynet = {
       source  = "BunnyWay/bunnynet"
-      version = "~> 0.15"
+      version = "~> 0.18"
     }
     mythicbeasts = {
       source  = "paultibbetts/mythicbeasts"
