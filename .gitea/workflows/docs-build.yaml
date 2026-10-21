@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: node:22-bookworm
+      image: node:24-bookworm
     defaults:
       run:
         working-directory: docs
